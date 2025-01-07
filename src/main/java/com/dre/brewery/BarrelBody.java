@@ -20,10 +20,7 @@
 
 package com.dre.brewery;
 
-import com.dre.brewery.utility.BUtil;
-import com.dre.brewery.utility.BoundingBox;
-import com.dre.brewery.utility.MaterialUtil;
-import com.dre.brewery.utility.MinecraftVersion;
+import com.dre.brewery.utility.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -220,15 +217,29 @@ public abstract class BarrelBody {
 	 * @param force to also check even if chunk is not loaded
 	 */
 	public Block getBrokenBlock(boolean force) {
-		if (force || BUtil.isChunkLoaded(spigot)) {
-			//spigot = getSpigotOfSign(spigot);
-			if (BarrelAsset.isBarrelAsset(BarrelAsset.SIGN, spigot.getType())) {
+		if (spigot == null || spigot.getWorld() == null) {
+			return null;
+		}
+
+		// Ensure world is loaded before checking blocks
+		if (!force && !spigot.getChunk().isLoaded()) {
+			return null;
+		}
+
+		try {
+			Material spigotType = spigot.getType();
+			if (!spigot.getChunk().isLoaded()) {
+				return null;
+			}
+
+			if (BarrelAsset.isBarrelAsset(BarrelAsset.SIGN, spigotType)) {
 				return checkSBarrel();
 			} else {
 				return checkLBarrel();
 			}
+		} catch (IllegalStateException | NullPointerException e) {
+			return null;
 		}
-		return null;
 	}
 
 	public Block checkSBarrel() {

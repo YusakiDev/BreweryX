@@ -150,12 +150,37 @@ public final class BreweryPlugin extends JavaPlugin {
 			return;
         }
 
-		// Load objects
+		// Load objects with safety checks
 		DataManager.loadMiscData(dataManager.getBreweryMiscData());
-		Barrel.getBarrels().addAll(dataManager.getAllBarrels()
-						.stream()
-						.filter(Objects::nonNull)
-						.toList());
+
+		// Delay barrel loading for Folia
+		if (MinecraftVersion.isFolia()) {
+			scheduler.runTask(() -> {
+				long startTime = System.currentTimeMillis();
+				int count = 0;
+				var barrels = dataManager.getAllBarrels()
+					.stream()
+					.filter(Objects::nonNull)
+					.toList();
+
+				Barrel.getBarrels().addAll(barrels);
+				count = barrels.size();
+
+				long duration = System.currentTimeMillis() - startTime;
+			});
+		} else {
+			long startTime = System.currentTimeMillis();
+			int count = 0;
+			var barrels = dataManager.getAllBarrels()
+				.stream()
+				.filter(Objects::nonNull)
+				.toList();
+
+			Barrel.getBarrels().addAll(barrels);
+			count = barrels.size();
+
+			long duration = System.currentTimeMillis() - startTime;
+		}
 		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream()
 						.filter(Objects::nonNull)
 						.collect(Collectors.toMap(
