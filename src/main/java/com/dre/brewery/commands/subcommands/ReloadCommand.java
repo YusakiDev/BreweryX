@@ -33,8 +33,10 @@ import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.releases.ReleaseChecker;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -70,7 +72,14 @@ public class ReloadCommand implements SubCommand {
 			ConfigManager.loadRecipes();
 
 			// Reload Cauldron Particle Recipes
-			BCauldron.reload();
+			if (sender instanceof Player player) {
+				BreweryPlugin.getScheduler().runTask(player.getLocation(), BCauldron::reload);
+			} else {
+				// For console, use first chunk of first world as location
+				World world = Bukkit.getWorlds().get(0);
+				BreweryPlugin.getScheduler().runTask(world.getLoadedChunks()[0].getBlock(0, 0, 0).getLocation(), BCauldron::reload);
+			}
+
 
 			// Clear Recipe completions
 			CommandUtil.reloadTabCompleter();
