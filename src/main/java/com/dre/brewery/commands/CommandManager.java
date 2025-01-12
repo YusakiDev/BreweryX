@@ -133,12 +133,12 @@ public class CommandManager implements TabExecutor {
         return null;
     }
 
-	public static void addSubCommand(String name, SubCommand subCommand) {
+    public static void addSubCommand(String name, SubCommand subCommand) {
         if (subCommands.containsKey(name)) {
             Logging.warningLog("SubCommand with name: &6" + name + " &ealready exists! It's being overwritten!");
         }
-		subCommands.put(name, subCommand);
-	}
+        subCommands.put(name, subCommand);
+    }
 
     public static void addSubCommand(SubCommand subCommand, String... names) {
         for (String name : names) {
@@ -146,9 +146,9 @@ public class CommandManager implements TabExecutor {
         }
     }
 
-	public static void removeSubCommand(String name) {
-		subCommands.remove(name);
-	}
+    public static void removeSubCommand(String name) {
+        subCommands.remove(name);
+    }
 
     public static void removeSubCommand(String... names) {
         for (String name : names) {
@@ -170,7 +170,7 @@ public class CommandManager implements TabExecutor {
 
     public static void execute(Class<? extends SubCommand> clazz, CommandSender sender, String label, String[] args) {
         subCommands.values().stream()
-                .filter(subCommand -> subCommand.getClass().equals(clazz))
-                .forEach(subCommand -> subCommand.execute(plugin, lang, sender, label, args));
+            .filter(subCommand -> subCommand.getClass().equals(clazz))
+            .forEach(subCommand -> subCommand.execute(plugin, lang, sender, label, args));
     }
 }

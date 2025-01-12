@@ -66,7 +66,7 @@ public class CommandUtil {
     // Todo: Replace with a map
     private static Set<Tuple<String, String>> mainSet;
     private static Set<Tuple<String, String>> altSet;
-    private static final String[] QUALITY = {"1", "10"};
+    private static final String[] QUALITY = { "1", "10" };
 
 
     public static void cmdHelp(CommandSender sender, String[] args) {
@@ -161,15 +161,15 @@ public class CommandUtil {
         PermissionUtil.evaluateExtendedPermissions(sender);
 
         if (INFO.checkCached(sender)) {
-            cmds.add (lang.getEntry("Help_Info"));
+            cmds.add(lang.getEntry("Help_Info"));
         }
 
         if (VERSION.isOrLater(MinecraftVersion.V1_13) && SEAL.checkCached(sender)) {
-            cmds.add (lang.getEntry("Help_Seal"));
+            cmds.add(lang.getEntry("Help_Seal"));
         }
 
         if (UNLABEL.checkCached(sender)) {
-            cmds.add (lang.getEntry("Help_UnLabel"));
+            cmds.add(lang.getEntry("Help_UnLabel"));
         }
 
         if (PermissionUtil.noExtendedPermissions(sender)) {
@@ -177,7 +177,7 @@ public class CommandUtil {
         }
 
         if (INFO_OTHER.checkCached(sender)) {
-            cmds.add (lang.getEntry("Help_InfoOther"));
+            cmds.add(lang.getEntry("Help_InfoOther"));
         }
 
         if (CREATE.checkCached(sender)) {
@@ -211,16 +211,16 @@ public class CommandUtil {
             cmds.add(lang.getEntry("Help_Static"));
         }
 
-		if (SET.checkCached(sender)) {
-			cmds.add(lang.getEntry("Help_Set"));
-		}
+        if (SET.checkCached(sender)) {
+            cmds.add(lang.getEntry("Help_Set"));
+        }
 
         if (COPY.checkCached(sender)) {
-            cmds.add (lang.getEntry("Help_Copy"));
+            cmds.add(lang.getEntry("Help_Copy"));
         }
 
         if (DELETE.checkCached(sender)) {
-            cmds.add (lang.getEntry("Help_Delete"));
+            cmds.add(lang.getEntry("Help_Delete"));
         }
 
         return cmds;
@@ -253,14 +253,14 @@ public class CommandUtil {
             final String input = args[1].toLowerCase();
 
             List<String> options = mainSet.stream()
+                .filter(s -> s.a().startsWith(input))
+                .map(Tuple::second)
+                .collect(Collectors.toList());
+            if (options.isEmpty()) {
+                options = altSet.stream()
                     .filter(s -> s.a().startsWith(input))
                     .map(Tuple::second)
                     .collect(Collectors.toList());
-            if (options.isEmpty()) {
-                options = altSet.stream()
-                        .filter(s -> s.a().startsWith(input))
-                        .map(Tuple::second)
-                        .collect(Collectors.toList());
             }
             return options;
         } else {
@@ -272,16 +272,17 @@ public class CommandUtil {
         }
 
     }
+
     private static List<Tuple<String, String>> createLookupFromName(final String name) {
         return Arrays.stream(name.split(" "))
-                .map(word -> new Tuple<>(word.toLowerCase(), name))
-                .collect(Collectors.toList());
+            .map(word -> new Tuple<>(word.toLowerCase(), name))
+            .collect(Collectors.toList());
     }
 
     public static List<String> filterWithInput(String[] options, String input) {
         return Arrays.stream(options)
-                .filter(s -> s.startsWith(input))
-                .collect(Collectors.toList());
+            .filter(s -> s.startsWith(input))
+            .collect(Collectors.toList());
     }
 
     public static void reloadTabCompleter() {

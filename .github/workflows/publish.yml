@@ -31,4 +31,4 @@ jobs:
           REPO_SECRET: ${{ secrets.REPO_SECRET }}
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          arguments: publishRelease --stacktrace
+          arguments: publishRelease -Dsources=true --stacktrace

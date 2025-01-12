@@ -33,10 +33,11 @@ plugins {
     id("com.gradleup.shadow") version "8.3.5"
     id("io.papermc.hangar-publish-plugin") version "0.1.2"
     id("com.modrinth.minotaur") version "2.8.7"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 group = "com.dre.brewery"
-version = "3.4.7"
+version = "3.4.8"
 val langVersion: Int = 17
 val encoding: String = "UTF-8"
 
@@ -57,7 +58,7 @@ repositories {
     maven("https://repo.glaremasters.me/repository/towny/") // Towny
     maven("https://repo.oraxen.com/releases") // Oraxen
     maven("https://storehouse.okaeri.eu/repository/maven-public/") // Okaeri Config
-    maven("https://papermc.io/repo/repository/maven-public/") // PaperLib
+    maven("https://repo.papermc.io/repository/maven-public/") // PaperLib
 }
 
 dependencies {
@@ -74,7 +75,7 @@ dependencies {
     // For proper scheduling between Bukkit-Folia like servers, https://github.com/Anon8281/UniversalScheduler
     implementation("com.github.Anon8281:UniversalScheduler:0.1.3-dev")
     // Nice annotations, I prefer these to Lombok's, https://www.jetbrains.com/help/idea/annotating-source-code.html
-    implementation("org.jetbrains:annotations:16.0.2")
+    compileOnly("org.jetbrains:annotations:26.0.1")
     // MongoDB & log4j to suppress MongoDB's logger
     implementation("org.mongodb:mongodb-driver-sync:5.3.0-beta0")
     compileOnly("org.apache.logging.log4j:log4j-core:2.23.1")
@@ -178,11 +179,25 @@ tasks {
         }
     }
 
+    runServer {
+        minecraftVersion("1.21.4")
+    }
+
+}
+
+tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class) {
+    javaLauncher = javaToolchains.launcherFor {
+        vendor = JvmVendorSpec.ADOPTIUM
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(langVersion)
-    //withSourcesJar() -> Add conditional for this
+    val b = System.getProperty("sources")
+    if (b != null && b.toBoolean()) {
+        withSourcesJar()
+    }
 }
 
 
