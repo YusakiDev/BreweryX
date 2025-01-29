@@ -115,9 +115,9 @@ public class EntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockChange(EntityChangeBlockEvent event) {
-        if (Barrel.get(event.getBlock()) != null) {
-            event.setCancelled(true);
-        }
+        if (event.getBlock().getType().name().toUpperCase().contains("CUT_COPPER")) return;
+        if (Barrel.get(event.getBlock()) == null) return;
+        event.setCancelled(true);
     }
 
     /**

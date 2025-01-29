@@ -122,10 +122,6 @@ public class TranslationManager {
 
         Lang fallback = loadFromResources(tempHead, Translation.EN);
         for (Translation trans : Translation.values()) {
-            if (trans == Translation.EN) {
-                continue;
-            }
-
             String langFilePathStr = "languages/" + trans.getFilename();
             Path langFilePath = dataFolder.toPath().resolve(langFilePathStr);
 
@@ -133,7 +129,9 @@ public class TranslationManager {
             Lang langFromResources = loadFromResources(tempHead, trans);
 
             langFromFile.updateMissingValuesFrom(langFromResources);
-            langFromFile.updateMissingValuesFrom(fallback);
+            if (trans != Translation.EN) {
+                langFromFile.updateMissingValuesFrom(fallback);
+            }
             langFromFile.save();
         }
     }

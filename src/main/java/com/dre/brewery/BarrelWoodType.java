@@ -40,7 +40,16 @@ public enum BarrelWoodType {
     MANGROVE("Mangrove", 9),
     CHERRY("Cherry", 10),
     BAMBOO("Bamboo", 11),
-    CUT_COPPER("Cut Copper", 12, Material.CUT_COPPER, Material.CUT_COPPER_STAIRS),
+    CUT_COPPER("Cut Copper", 12,
+        Material.CUT_COPPER, Material.CUT_COPPER_STAIRS,
+        Material.WAXED_CUT_COPPER, Material.WAXED_CUT_COPPER_STAIRS,
+        Material.EXPOSED_CUT_COPPER, Material.EXPOSED_CUT_COPPER_STAIRS,
+        Material.WAXED_EXPOSED_CUT_COPPER, Material.WAXED_EXPOSED_CUT_COPPER_STAIRS,
+        Material.WEATHERED_CUT_COPPER, Material.WEATHERED_CUT_COPPER_STAIRS,
+        Material.WAXED_WEATHERED_CUT_COPPER, Material.WAXED_WEATHERED_CUT_COPPER_STAIRS,
+        Material.OXIDIZED_CUT_COPPER, Material.OXIDIZED_CUT_COPPER_STAIRS,
+        Material.WAXED_OXIDIZED_CUT_COPPER, Material.WAXED_OXIDIZED_CUT_COPPER_STAIRS
+    ),
     PALE_OAK("Pale Oak", 13),
     // If you're adding more wood types, add them above 'NONE'
     NONE("None", -1, true);
@@ -82,6 +91,17 @@ public enum BarrelWoodType {
         BarrelAsset.addBarrelAsset(BarrelAsset.STAIRS, stairs);
     }
 
+    BarrelWoodType(String formattedName, int index, Material... materials) {
+        this.formattedName = formattedName;
+        this.index = index;
+
+        if (materials == null) return;
+        for (Material material : materials) {
+            boolean isStairs = material.name().contains("STAIRS");
+            BarrelAsset.addBarrelAsset(isStairs ? BarrelAsset.STAIRS : BarrelAsset.PLANKS, material);
+        }
+    }
+
     @Nullable
     private Material[] getStandardBarrelAssetMaterial(BarrelAsset assetType) {
         try {
@@ -118,6 +138,13 @@ public enum BarrelWoodType {
     public static BarrelWoodType fromMaterial(Material material) {
         for (BarrelWoodType type : values()) {
             if (material.name().toUpperCase().startsWith(type.name().toUpperCase())) {
+                return type;
+            }
+            if (
+                type == CUT_COPPER && !material.name().toUpperCase().contains("SLAB")
+                && material.name().toUpperCase().contains(type.name().toUpperCase())
+                // ^ Needed because of the waxed/exposed/weathered/oxidized prefix
+            ) {
                 return type;
             }
         }

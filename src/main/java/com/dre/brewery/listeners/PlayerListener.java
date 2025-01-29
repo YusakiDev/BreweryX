@@ -142,6 +142,11 @@ public class PlayerListener implements Listener {
             return;
         }
 
+        // Allow Waxing and Scraping of copper barrels when sneaking
+        if (clickedBlock.getType().name().toUpperCase().contains("CUT_COPPER") && player.isSneaking()) {
+            return;
+        }
+
         // -- Access a Barrel --
         Barrel barrel = null;
         if (BarrelAsset.isBarrelAsset(BarrelAsset.PLANKS, type)) {
