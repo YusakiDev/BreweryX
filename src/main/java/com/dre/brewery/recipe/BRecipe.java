@@ -471,25 +471,28 @@ public class BRecipe implements Cloneable {
     }
 
     private void scheduleCommand(Player player, String cmd, String playerName, int quality, boolean isServerCommand) {
-        if (cmd.startsWith("/")) cmd = cmd.substring(1);
-        if (cmd.contains("/")) {
-            String[] parts = cmd.split("/");
-            String command = parts[0].trim(); // Needs to be effectively final for scheduling
-            cmd = parts[0].trim();
-            String delay = parts[1].trim();
+        String command = cmd.replace("%player%", player.getName());  // Replace placeholder with actual player name
+
+        // Parse delay if specified at the end with \
+        if (command.contains("\\")) {
+            String[] split = command.split("\\\\", 2);
+            command = split[0].trim();
+            String delay = split[1];
             long delayTicks = parseDelayToTicks(delay);
+            final String finalCommand = command;
             if (delayTicks > 0) {
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        executeCommand(player, command, playerName, quality, isServerCommand);
-                    }
-                }.runTaskLater(BreweryPlugin.getInstance(), delayTicks);
+                BreweryPlugin.getScheduler().runTaskLater(() -> {
+                    this.executeCommand(player, finalCommand, playerName, quality, isServerCommand);
+                }, delayTicks);
                 return;
             }
         }
-        // Execute command immediately if no delay is specified
-        executeCommand(player, cmd, playerName, quality, isServerCommand);
+
+        final String finalCommand = command;
+        // Execute command immediately but ensure it runs on main thread
+        BreweryPlugin.getScheduler().runTask(() -> {
+            this.executeCommand(player, finalCommand, playerName, quality, isServerCommand);
+        });
     }
 
     private long parseDelayToTicks(String delay) {

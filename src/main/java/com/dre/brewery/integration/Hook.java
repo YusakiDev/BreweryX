@@ -48,6 +48,7 @@ public class Hook {
     public static final Hook ORAXEN = new Hook("Oraxen");
     public static final Hook ITEMSADDER = new Hook("ItemsAdder");
     public static final Hook NEXO = new Hook("Nexo");
+    public static final Hook ITEMEDIT = new Hook("ItemEdit");
 
 
     protected final String name;

@@ -27,6 +27,7 @@ import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.RecipesFile;
 import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
 import com.dre.brewery.integration.item.BreweryPluginItem;
+import com.dre.brewery.integration.item.ItemEditItem;
 import com.dre.brewery.integration.item.ItemsAdderPluginItem;
 import com.dre.brewery.integration.item.MMOItemsPluginItem;
 import com.dre.brewery.integration.item.NexoPluginItem;
@@ -195,5 +196,9 @@ public class ConfigManager {
         PluginItem.registerForConfig("oraxen", OraxenPluginItem::new);
         PluginItem.registerForConfig("itemsadder", ItemsAdderPluginItem::new);
         PluginItem.registerForConfig("nexo", NexoPluginItem::new);
+        PluginItem.registerForConfig("itemedit", ItemEditItem::new);
+
+        // Special handling for ItemEdit to add all materials to accepted list
+        ItemEditItem.register();
     }
 }
