@@ -54,6 +54,7 @@ public class BCauldronRecipe {
     @Getter
     public static Set<Material> acceptedMaterials = new HashSet<>(); // Fast cache for all accepted Materials
 
+    private final String id;
     private String name;
     private List<RecipeItem> ingredients;
     private PotionColor color;
@@ -67,9 +68,11 @@ public class BCauldronRecipe {
      * A New Cauldron Recipe with the given name.
      * <p>Use new BCauldronRecipe.Builder() for easier Cauldron Recipe Creation
      *
+     * @param id ID of the Cauldron Recipe
      * @param name Name of the Cauldron Recipe
      */
-    public BCauldronRecipe(String name) {
+    public BCauldronRecipe(String id, String name) {
+        this.id = id;
         this.name = name;
         color = PotionColor.CYAN;
     }
@@ -85,7 +88,7 @@ public class BCauldronRecipe {
             return null;
         }
 
-        BCauldronRecipe recipe = new BCauldronRecipe(name);
+        BCauldronRecipe recipe = new BCauldronRecipe(id, name);
 
         recipe.ingredients = BRecipe.loadIngredients(BUtil.getListSafely(cfgCauldronIngredient.getIngredients()), id);
         if (recipe.ingredients == null || recipe.ingredients.isEmpty()) {
@@ -232,6 +235,7 @@ public class BCauldronRecipe {
         return null;
     }
 
+
     /**
      * Gets a Modifiable Sublist of the CauldronRecipes that are loaded by config.
      * <p>Changes are directly reflected by the main list of all recipes
@@ -261,6 +265,7 @@ public class BCauldronRecipe {
 
 
     public static class Builder {
+        private final String id;
         private final String name;
         private final List<RecipeItem> ingredients = new ArrayList<>();
         private PotionColor color = PotionColor.CYAN;
@@ -270,7 +275,8 @@ public class BCauldronRecipe {
         private boolean saveInData = false;
 
 
-        public Builder(String name) {
+        public Builder(String id, String name) {
+            this.id = id;
             this.name = name;
         }
 
@@ -315,7 +321,7 @@ public class BCauldronRecipe {
         }
 
         public BCauldronRecipe build() {
-            BCauldronRecipe recipe = new BCauldronRecipe(name);
+            BCauldronRecipe recipe = new BCauldronRecipe(id, name);
             recipe.ingredients = ingredients;
             recipe.color = color;
             recipe.particleColor = particleColor;

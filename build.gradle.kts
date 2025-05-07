@@ -37,7 +37,7 @@ plugins {
 }
 
 group = "com.dre.brewery"
-version = "3.4.10-SNAPSHOT"
+version = "3.4.10"
 val langVersion: Int = 17
 val encoding: String = "UTF-8"
 
@@ -110,6 +110,7 @@ dependencies {
     compileOnly("io.lumine:MythicLib-dist:1.6-SNAPSHOT") // https://www.spigotmc.org/resources/mythiclib.90306/history
     compileOnly("com.acrobot.chestshop:chestshop:3.12.2") // https://github.com/ChestShop-authors/ChestShop-3/releases
     compileOnly("com.palmergames.bukkit.towny:towny:0.100.3.0") // https://www.spigotmc.org/resources/towny-advanced.72694/history
+    compileOnly("com.github.Angeschossen:LandsAPI:7.11.10") // https://www.spigotmc.org/resources/lands.53313/history
     compileOnly("com.nisovin.shopkeepers:ShopkeepersAPI:2.18.0") // https://www.spigotmc.org/resources/shopkeepers.80756/history
     compileOnly("nl.rutgerkok:blocklocker:1.10.4") // https://www.spigotmc.org/resources/blocklocker.3268/history
     compileOnly("me.clip:placeholderapi:2.11.5") // https://www.spigotmc.org/resources/placeholderapi.6245/history
@@ -182,6 +183,13 @@ tasks {
         minecraftVersion("1.21.4")
     }
 
+    register("publishToDiscord") {
+        val webhook = DiscordWebhook(System.getenv("DISCORD_WEBHOOK"))
+        webhook.message = "@everyone"
+        webhook.embedTitle = "BreweryX - v${project.version}"
+        webhook.embedDescription = readChangeLog()
+        webhook.send()
+    }
 }
 
 tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class) {
@@ -296,6 +304,10 @@ class DiscordWebhook(
     var defaultThumbnail: Boolean = true
 ) {
 
+    companion object {
+        private const val MAX_EMBED_DESCRIPTION_LENGTH = 4096
+    }
+
     var message: String = "content"
     var username: String = "BreweryX Updates"
     var avatarUrl: String = "https://github.com/breweryteam.png"
@@ -341,7 +353,7 @@ class DiscordWebhook(
     }
 
     private fun createEmbeds(): List<JsonObject> {
-        if (embedDescription.length <= 2000) {
+        if (embedDescription.length <= MAX_EMBED_DESCRIPTION_LENGTH) {
             return listOf(JsonObject().apply {
                 addProperty("title", embedTitle)
                 addProperty("description", embedDescription)
@@ -361,8 +373,9 @@ class DiscordWebhook(
         val embeds = mutableListOf<JsonObject>()
         var description = embedDescription
         while (description.isNotEmpty()) {
-            val chunk = description.substring(0, 2000)
-            description = description.substring(2000)
+            val chunkLength = minOf(MAX_EMBED_DESCRIPTION_LENGTH, description.length)
+            val chunk = description.substring(0, chunkLength)
+            description = description.substring(chunkLength)
             embeds.add(JsonObject().apply {
                 addProperty("title", embedTitle)
                 addProperty("description", chunk)

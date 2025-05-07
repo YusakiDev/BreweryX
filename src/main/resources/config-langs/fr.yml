@@ -8,10 +8,10 @@
 config:
   language: |
     Fichier de langage à utiliser [en]
-    Valeurs disponibles: en (Anglais), de (Allemande), es (Espagnol), fr (Français), it (Italien), ru (Russe), zh (Chinois)
+    Valeurs disponibles: en (Anglais), de (Allemande), es (Espagnol), fr (Français), it (Italien), ru (Russe), zh (Chinois), uk (Ukrainian)
   updateCheck: |
     Activer la cherche de mises à jour.  Si oui, veuillez préciser quel service à y utiliser pour vérifier les mises à jour ; si non, préciser « None ».
-    Services disponibles : GitHub, Snapshots, Spigot, None [GitHub]   
+    Services disponibles : GitHub, Snapshots, Spigot, None [GitHub]
   autosave: "Intervale de la sauvegarde automatique en minutes [10]"
   pluginPrefix: "Préfixe utilisé avec les messages BreweryX"
   debug: "Afficher les messages de débogue dans le journal du serveur (log) [false]"
@@ -87,6 +87,10 @@ config:
   hangoverDays: "Temps (en jours) pour que les données d’ivresse restent sauvergardées lorsque le joueur est déconnecté, pour appliquer les effets. [7]"
   colorInBarrels-Brewer: "Colorer les informations d’objets (lore) au dépend de la qualité dans un tonneau et/ou dans un stand de brassage (l’alambic) [true, true]"
   openLargeBarrelEverywhere: "Si le grand tonneau peut être ouvert en cliquant sur n’importe quel bloc, non seulement le robinet ou le panneau. Toujours « true » pour les petits tonneaux. [true]"
+  barrelInvSizes: |
+    Combien de rangées l'inventaire de chaque type de baril doit-il avoir [3,1]
+    Doit être un entier entre 1 et 6 (une limitation de Minecraft / GUI)
+    (Un redémarrage du serveur est requis pour que les modifications prennent effet)
   brewHopperDump: "Permettre l’élimination de boissons à l’interieur d’une trémie mais en conservant la bouteille [true]"
   enableChatDistortion: |
     -- Paramètres de la distorsion du chat --
@@ -122,9 +126,9 @@ config:
 recipesFile:
   header: |
     -- Recettes pour les boissons --
-    
+
     Une guide pour cette section peut se trouver au wiki à cette addresse web : https://brewery.lumamc.net/guide/recipies/
-    
+
     enabled: « true » si la recette serait activée, « false » si elle devrait être désactivée
     name : Différents noms pour la mauvaise/moyen/bonne qualité (Les codes de mise en forme sont pris en charge : comme par exemple &6 pour la couleur Or.)
     ingredients : Liste des 'matériaux/montant'

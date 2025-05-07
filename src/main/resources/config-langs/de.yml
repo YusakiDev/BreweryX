@@ -4,7 +4,7 @@
 config:
   language: |
     Sprachedatei die genutzt werden sollte [en]
-    Available types: en (English), de (German), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Chinese)
+    Available types: en (English), de (German), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Chinese), uk (Ukrainian)
   updateCheck: |
     Should BreweryX check for updates? Specify which service you'd like to use for update checking or disable it.
     Options available: GitHub, Snapshots, Spigot, None [GitHub]
@@ -59,7 +59,7 @@ config:
     Dies kann also aktiviert werden um Rezept-cheating schwerer zu machen, aber keine Tränke per World Download, Schematic, o.ä. geteilt werden. [false]
   useOtherPlugins: |
     -- Plugin Kompatiblität --
-    
+
     Andere Plugins (wenn installiert) nach Rechten zum öffnen von Fässern checken [true]
     Plugins 'Landlord' und 'Protection Stones' nutzen WorldGuard. 'ClaimChunk' wird nativ unterstützt.
   useVirtualChestPerms: |
@@ -74,6 +74,10 @@ config:
   hangoverDays: "Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]"
   colorInBarrels: "Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, true]"
   openLargeBarrelEverywhere: "Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]"
+  barrelInvSizes: |
+    Wie viele Reihen das Inventar jedes Fass-Typs haben soll [3,1]
+    Muss eine ganze Zahl zwischen 1 und 6 sein (eine Minecraft- / GUI-Beschränkung)
+    (Ein Server-Neustart ist erforderlich, damit die Änderungen hier wirksam werden)
   brewHopperDump: "Ob das Entleeren von Brewery Tränken mit Hilfe von Trichtern möglich ist, um die Glasflasche zurück zu bekommen [true]"
   enableChatDistortion: |
     Ob geschriebener Chat bei großer Trunkenheit abgefälscht werden soll,
@@ -100,11 +104,11 @@ config:
 recipesFile:
   header: |
     -- Rezepte für Getränke --
-    
+
     Proper guide for this section can be found in our wiki here - https://brewery.lumamc.net/guide/recipies/
-    
+
     enabled: true if the recipe should be enabled, false if it should be disabled
-    
+
     name: Verschiedene Namen für schlecht/mittel/gut (Farbcodes möglich: z.b. &6)
     ingredients: Auflistung von 'Material/Anzahl'
       Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
@@ -138,14 +142,14 @@ recipesFile:
         Minimale und Maximale Level/Dauer können durch "-" festgelegt werden, Bsp: 'SPEED/1-2/30-40' = Level 1 und 30 sek minimal, Level 2 und 40 sek maximal
         Diese Bereiche funktionieren auch umgekehrt, Bsp: 'POISON/3-1/20-5' für abschwächende Effekte bei guter Qualität
         Längste mögliche Effektdauer: 1638 sek. Es muss keine Dauer für Effekte mit sofortiger Wirkung angegeben werden.
-  
+
 
 cauldronFile:
   header: |
     -- Zutaten im Kessel --
     Hier kann angegeben werden welche Zutaten in den Kessel getan werden können und was mit ihnen geschieht.
     Es braucht nur etwas hier eingetragen werden falls der Basistrank besondere Eigenschaften wie Name und Farbe haben soll
-    
+
     name: Name des Basistrankes der aus dem Kessel kommt (Farbcodes möglich: z.b. &6)
     ingredients: Auflistung von 'Material/Anzahl'
       Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
@@ -166,7 +170,7 @@ customItemsFile:
   header: |
     -- Eigene Items Definieren --
     Die festgelegte id kann dann in einem Rezept verwendet werden
-    
+
     matchAny: true wenn es schon reicht wenn eine der Angaben zutrifft
     material: Welche Art das Item haben muss
     name: Welchen Namen das Item haben muss (Farbcodes möglich: z.b. &6)

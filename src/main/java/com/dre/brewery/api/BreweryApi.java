@@ -478,15 +478,26 @@ public class BreweryApi {
         return null;
     }
 
+
     /**
      * Create a New Cauldron Recipe with a Recipe Builder.
      *
      * @param name The name of the new Cauldron Recipe
      * @return A Cauldron Recipe Builder
      */
+    @Deprecated
     public static BCauldronRecipe.Builder cauldronRecipeBuilder(String name) {
-        return new BCauldronRecipe.Builder(name);
+        return new BCauldronRecipe.Builder(name, name);
     }
 
-
+    /**
+     * Create a New Cauldron Recipe with a Recipe Builder.
+     *
+     * @param id   The id of the new Cauldron Recipe
+     * @param name The name of the new Cauldron Recipe
+     * @return A Cauldron Recipe Builder
+     */
+    public static BCauldronRecipe.Builder cauldronRecipeBuilder(String id, String name) {
+        return new BCauldronRecipe.Builder(id, name);
+    }
 }

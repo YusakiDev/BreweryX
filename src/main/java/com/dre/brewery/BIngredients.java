@@ -22,12 +22,14 @@ package com.dre.brewery;
 
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.lore.Base91DecoderStream;
 import com.dre.brewery.lore.Base91EncoderStream;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.recipe.DebuggableItem;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.ItemLoader;
 import com.dre.brewery.recipe.PotionColor;
@@ -35,6 +37,7 @@ import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
+import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -51,14 +54,18 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * Represents ingredients in Cauldron, Brew
  */
+@Getter
 public class BIngredients {
 
     private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
     private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
+    private static final Config config = ConfigManager.getConfig(Config.class);
     private static final Lang lang = ConfigManager.getConfig(Lang.class);
     private static int lastId = 0; // Legacy
 
@@ -121,15 +128,27 @@ public class BIngredients {
      * @param rItem      the RecipeItem that matches the ingredient
      */
     public void add(ItemStack ingredient, RecipeItem rItem) {
-        Ingredient ingredientItem = rItem.toIngredient(ingredient);
+        add(rItem.toIngredient(ingredient));
+    }
+
+    /**
+     * Add an ingredient to this based on the given RecipeItem
+     *
+     * @param rItem      the RecipeItem that matches the ingredient
+     */
+    public void addGeneric(RecipeItem rItem) {
+        add(rItem.toIngredientGeneric());
+    }
+
+    private void add(Ingredient ingredient) {
         for (Ingredient existing : ingredients) {
-            if (existing.isSimilar(ingredientItem)) {
+            if (existing.isSimilar(ingredient)) {
                 existing.setAmount(existing.getAmount() + 1);
                 return;
             }
         }
-        ingredientItem.setAmount(1);
-        ingredients.add(ingredientItem);
+        ingredient.setAmount(1);
+        ingredients.add(ingredient);
     }
 
     /**
@@ -159,7 +178,7 @@ public class BIngredients {
             lore.updateQualityStars(false);
             lore.updateCustomLore();
             lore.updateAlc(false);
-            lore.updateBrewer(brewer.getDisplayName());
+            lore.updateBrewer(brewer == null ? null : brewer.getDisplayName());
             lore.addOrReplaceEffects(brew.getEffects(), brew.getQuality());
             lore.write();
 
@@ -238,10 +257,6 @@ public class BIngredients {
         return ingredients;
     }
 
-    public int getCookedTime() {
-        return cookedTime;
-    }
-
     /**
      * best recipe for current state of potion, STILL not always returns the correct one...
      */
@@ -252,6 +267,7 @@ public class BIngredients {
         int woodQuality;
         int ageQuality;
         BRecipe bestRecipe = null;
+        // FIXME: This should include BCauldronRecipes too. (Proper parent class needed!)
         for (BRecipe recipe : BRecipe.getAllRecipes()) {
             ingredientQuality = getIngredientQuality(recipe);
             cookingQuality = getCookingQuality(recipe, distilled);
@@ -426,9 +442,33 @@ public class BIngredients {
             // type of wood doesnt matter
             return 10;
         }
+        if (config.isNewBarrelTypeAlgorithm()) {
+            return getWoodQualityNew(recipe, wood);
+        }
         int quality = 10 - Math.round(recipe.getWoodDiff(wood.getIndex()) * recipe.getDifficulty());
 
         return Math.max(quality, 0);
+    }
+    // At difficulty 1, distances 0-5 have quality 10, 10, 9, 8, 7, 6
+    // At difficulty 5, distances 0-5 have quality 10, 8, 4, 1, 0, 0
+    // At difficulty 10, distances 0-5 have quality 10, 5, 0, 0, 0, 0
+    // See: https://www.desmos.com/calculator/aaoixs2qo7
+    private int getWoodQualityNew(BRecipe recipe, BarrelWoodType wood) {
+        BarrelWoodType recipeWood = recipe.getWood();
+        float baseQuality = switch (recipeWood.getDistance(wood)) {
+            case 0 -> 10.0f;
+            case 1 -> 9.0f;
+            case 2 -> 7.75f;
+            case 3 -> 6.25f;
+            case 4 -> 4.5f;
+            case 5 -> 2.5f;
+            default -> 0.0f;
+        };
+        if (baseQuality == 0.0f) {
+            return 0;
+        }
+        float quality = 10f - (10f - baseQuality) * 0.5f * recipe.getDifficulty();
+        return Math.max(Math.round(quality), 0);
     }
 
     /**
@@ -459,9 +499,13 @@ public class BIngredients {
 
     @Override
     public String toString() {
-        return "BIngredients{" +
-            "cookedTime=" + cookedTime +
-            ", total ingredients: " + getIngredientsCount() + '}';
+        String ingredientsStr = ingredients.stream()
+            .map(DebuggableItem::getDebugID)
+            .collect(Collectors.joining("[", "]", ", "));
+        return new StringJoiner(", ", "BIngredients{", "}")
+            .add("cookedTime=" + cookedTime)
+            .add("ingredients=" + ingredientsStr)
+            .toString();
     }
 
 	/*public void testStore(DataOutputStream out) throws IOException {

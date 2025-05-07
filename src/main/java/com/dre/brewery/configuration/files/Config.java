@@ -165,6 +165,9 @@ public class Config extends AbstractOkaeriConfigFile {
     @LocalizedComment("config.agingYearDuration")
     private int agingYearDuration = 20;
 
+    @LocalizedComment("config.newBarrelTypeAlgorithm")
+    private boolean newBarrelTypeAlgorithm = false;
+
     @LocalizedComment("config.commandAliases")
     private List<String> commandAliases = List.of("brewery", "brew");
 
@@ -178,6 +181,7 @@ public class Config extends AbstractOkaeriConfigFile {
     private boolean useLWC = true;
     private boolean useGriefPrevention = true;
     private boolean useTowny = true;
+    private boolean useLands = true;
     private boolean useBlockLocker = true;
     private boolean useGMInventories = true;
 
@@ -202,6 +206,10 @@ public class Config extends AbstractOkaeriConfigFile {
 
     @LocalizedComment("config.openLargeBarrelEverywhere")
     private boolean openLargeBarrelEverywhere = true;
+
+    @LocalizedComment("config.barrelInvSizes")
+    private int barrelInvSizeLarge = 3;
+    private int barrelInvSizeSmall = 1;
 
     @LocalizedComment("config.brewHopperDump")
     private boolean brewHopperDump = true;

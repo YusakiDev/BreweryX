@@ -23,6 +23,7 @@ package com.dre.brewery.integration.item;
 import com.dre.brewery.Brew;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PluginItem;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -40,11 +41,25 @@ public class BreweryPluginItem extends PluginItem {
         if (brew == null) {
             return false;
         }
+        return isMatchingBrew(brew) || isCauldronIngredient(item);
+    }
 
+    // Checks if an ItemStack is a Brewery Brew with the correct recipe by comparing the ids/names
+    private boolean isMatchingBrew(Brew brew) {
         BRecipe recipe = brew.getCurrentRecipe();
         if (recipe != null) {
-            return this.getItemId().equalsIgnoreCase(recipe.getId());
+            // We *could* add support for names instead of just using the ids
+            return this.getItemId().equalsIgnoreCase(recipe.getId()) ||
+                this.getItemId().equalsIgnoreCase(recipe.getRecipeName()) || // From original Impl
+                this.getItemId().equalsIgnoreCase(recipe.getName(10)); // From original Impl
         }
         return false;
+    }
+
+    // I truly hate doing it this way, but to have it be checked based on ids
+    // I'd have to rewrite major parts of BRecipe and BCauldronRecipe - Jsinco
+    private boolean isCauldronIngredient(ItemStack item) {
+        if (!item.hasItemMeta()) return false;
+        return ChatColor.stripColor(item.getItemMeta().getDisplayName()).equalsIgnoreCase(this.getItemId()); // From original Impl
     }
 }
